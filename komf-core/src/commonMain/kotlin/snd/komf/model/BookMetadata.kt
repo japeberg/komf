@@ -27,6 +27,7 @@ data class BookMetadata(
     val endChapter: Int? = null,
 
     val thumbnail: Image? = null,
+    val oneshot: Boolean? = null,
 )
 
 @Serializable
@@ -61,5 +62,6 @@ data class ProviderBookMetadata(
     val id: ProviderBookId? = null,
     val seriesId: ProviderSeriesId? = null,
     val metadata: BookMetadata,
+    val oneshot: Boolean? = null,
 )
 

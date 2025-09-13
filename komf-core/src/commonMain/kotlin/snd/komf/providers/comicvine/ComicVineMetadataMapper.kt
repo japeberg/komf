@@ -87,8 +87,11 @@ class ComicVineMetadataMapper(
         storyArcs: List<ComicVineStoryArc>,
         cover: Image?
     ): ProviderBookMetadata {
-        // If this is a oneshot (volume with only one issue), use the volume name as the title
-        val isOneshot = issue.volume?.countOfIssues == 1
+        // Improved oneshot detection: volume has one issue, or issue name is blank/null, or issue name matches volume name
+        val isOneshot =
+            (issue.volume?.countOfIssues == 1) ||
+            (issue.name.isNullOrBlank()) ||
+            (issue.name == issue.volume?.name)
         val metadata = BookMetadata(
             title = if (isOneshot) issue.volume?.name else issue.name,
             summary = issue.description?.let { parseDescription(it) },
@@ -104,11 +107,13 @@ class ComicVineMetadataMapper(
                 BookStoryArc(name = arc.name, number = index + 1)
             },
             thumbnail = cover,
+            oneshot = isOneshot
         )
 
         val providerMetadata = ProviderBookMetadata(
             id = ProviderBookId(issue.id.toString()),
-            metadata = metadata
+            metadata = metadata,
+            oneshot = isOneshot
         )
         return MetadataConfigApplier.apply(providerMetadata, bookMetadataConfig)
     }
